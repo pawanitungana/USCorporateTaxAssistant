@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Corporate Tax Info</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 2em;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2em;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 1em;
+      margin-bottom: 1em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+
+    button {
+      padding: 1em;
+      width: 100%;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .response {
+      margin-top: 2em;
+      background: #e8f0fe;
+      padding: 1em;
+      border-radius: 5px;
+    }
+
+    .error {
+      color: red;
+      margin-top: 1em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Corporate Tax Info Finder</h1>
+    <input type="text" id="userQuery" placeholder="Enter your query (e.g., 'Tax in New York for $100k')" />
+    <button onclick="getTaxInfo()">Submit</button>
+    <div id="result" class="response" style="display:none;"></div>
+    <div id="error" class="error"></div>
+  </div>
+
+  <script>
+    async function getTaxInfo() {
+      const query = document.getElementById('userQuery').value;
+      const resultDiv = document.getElementById('result');
+      const errorDiv = document.getElementById('error');
+
+      resultDiv.style.display = 'none';
+      errorDiv.textContent = '';
+
+      try {
+        const response = await fetch('/api/get_tax_info', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_query: query })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          resultDiv.style.display = 'block';
+          resultDiv.innerHTML = `<strong>Answer:</strong> ${data.response}`;
+        } else {
+          errorDiv.textContent = data.error || 'An error occurred.';
+        }
+      } catch (err) {
+        errorDiv.textContent = 'Could not connect to the server.';
+      }
+    }
+  </script>
+
+</body>
+</html>
